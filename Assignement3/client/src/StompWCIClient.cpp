@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     int i2 = s.find(':');
     int i3 = s.find(' ', i2);
     int i4 = s.find(' ', i3 + 1);
-    if (i != -1 && i2 != -1 && i3 != -1 && i4 != -1 && s.substr(0, i) == "login") { //#entire function is currently within this if     
+    if (i != -1 && i2 != -1 && i3 != -1 && i4 != -1 && s.substr(0, i) == "login") {     
             string host = s.substr(6, i2 - 6);
             short port = stoi(s.substr(i2 + 1, i3 - i2 - 1)); 
             connectionHandler->Set(host, port);
@@ -53,8 +53,6 @@ int main(int argc, char *argv[])
 					 << endl;
 				*terminate = true;
 			}
-			//int len = answer.length();
-			// answer.resize(len - 1);
 			answer=stompProtocol->ReceiveFrame(answer);
 			*inputReady=true;
 			if (answer == "ERROR")
@@ -80,8 +78,8 @@ int main(int argc, char *argv[])
 		{ // user reading thread here
 		    if (*inputReady){
 			const short bufsize = 1024;
-			char buf[bufsize];		   // Aviv:I assume the buffer is created anew just to clear it from previous input
-			cin.getline(buf, bufsize); // Aviv:reads from the client.
+			char buf[bufsize];		
+			cin.getline(buf, bufsize); // reads from the client
 			string line(buf);
 			string frame = stompProtocol->receiveUserCommand(line);
 			if (frame.substr(0, 4) == "SEND")
