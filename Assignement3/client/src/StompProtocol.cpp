@@ -23,7 +23,7 @@ string StompProtocol::ReceiveFrame(string frame){ //recieves a frame from the se
         updateGame(frame);
         return "MESSAGE";
         }
-    if (command=="RECEIPT"){//Working clientside 10.1 for identifying Receipt frame and ID, but I'm not sure what we actually want it to do with that info.
+    if (command=="RECEIPT"){
         int index=frame.find(":");
         int last=frame.find('\n', index);
         int id=stoi(frame.substr(index+1,last-index-1));
@@ -42,15 +42,15 @@ string StompProtocol::ReceiveFrame(string frame){ //recieves a frame from the se
 }
 
 string StompProtocol::receiveUserCommand(string command){
-    if (command=="logout") return "DISCONNECT\nreceipt:0\n\n"+'\0';//Working clientside 10.1
+    if (command=="logout") return "DISCONNECT\nreceipt:0\n\n"+'\0';
     int index=command.find(' ');
     if (index!=-1){
     string header=command.substr(0, index);
-    if (header=="join") return join (command.substr(index+1));//Working clientside 10.1
-    if (header=="exit") return exit(command.substr(index+1));//Working clientside 10.1
-    if (header=="report") return report(command.substr(index+1));//Working clientside 11.1
-    if (header=="summary") return summary(command.substr(index+1));//Clientside printing test was fine, but need to see if it can also write to file properly
-    if (header=="login") cout<< ("The client is already logged in, log out before trying again."); //Working clientside 10.1. stompProtocol is only accesisble after user has logged in for simplicity
+    if (header=="join") return join (command.substr(index+1));
+    if (header=="exit") return exit(command.substr(index+1));
+    if (header=="report") return report(command.substr(index+1));
+    if (header=="summary") return summary(command.substr(index+1));
+    if (header=="login") cout<< ("The client is already logged in, log out before trying again.");
     return "?";
     }
     return "?";
@@ -59,7 +59,7 @@ string StompProtocol::receiveUserCommand(string command){
 string StompProtocol:: join(string command){//subscribe frame
     subToID[command]=++lastID;
     IDToSub[lastID]=command;
-    return "SUBSCRIBE\ndestination:"+command+"\nid:"+to_string(lastID)+"\nreceipt:"+to_string(lastID)+"\n\n"+'\0'; //one of the slashes being the other way is intentional, that's how the frame is described in the pdf
+    return "SUBSCRIBE\ndestination:"+command+"\nid:"+to_string(lastID)+"\nreceipt:"+to_string(lastID)+"\n\n"+'\0'; 
 }
 
 string StompProtocol:: exit(string command){//unsubscribe frame
@@ -152,7 +152,7 @@ void StompProtocol:: updateGame(string events){
                     int toReplace=gameVector->at(0).second.find(currHeader, indexGeneralI);
                     string toAdd=events.substr(headerEnd+2, events.find('\n', headerEnd)-headerEnd-2);//returns the value that is to be updated to the key
                     if(toReplace!=-1 && toReplace<indexAI){ //checks if value exists already
-                        int statStartIndex=toReplace+currHeader.length()+2; //#need to check these two are actually the correct values both here and in substr use
+                        int statStartIndex=toReplace+currHeader.length()+2; 
                         int statEndIndex=gameVector->at(0).second.find('\n', statStartIndex);
                         gameVector->at(0).second=gameVector->at(0).second.substr(0, statStartIndex)+toAdd+gameVector->at(0).second.substr(statEndIndex);
                     }
@@ -189,7 +189,7 @@ void StompProtocol:: updateGame(string events){
             currIndex=events.find('\n',currIndex+1);//skip reading the team B updates line
             //get and place team b updates
             while (currIndex<indexDescP-1) {//-1 because unlike searching for (general, team a, teamb) updates, description points to the first index of its line
-                int headerEnd=events.find(':',currIndex);//#Cuurently also puts description in team B updates, even though its not supposed to
+                int headerEnd=events.find(':',currIndex);
                 if (headerEnd!=-1 && headerEnd<indexDescP) {
                     string currHeader=events.substr(currIndex+1, headerEnd-currIndex-1);
                     int toReplace=gameVector->at(0).second.find(currHeader, indexBI);
